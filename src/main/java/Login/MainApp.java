@@ -17,7 +17,7 @@ public class MainApp {
         Scanner input = new Scanner(System.in);
         
         //Create an object of the login class so we can call its methods
-            Login login = new Login();
+            MainApp login = new MainApp();
         
         //---REGISTRATION SECTION---
         System.out.println("===USER REGISRATION===");
@@ -52,5 +52,17 @@ public class MainApp {
           //Print out the correct login message
           String loginMessage = login.returnLoginStatus(loggedln);
           System.out.println(loginMessage);
+    }
+
+    private String registerUser(String username, String password, String phone) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private boolean loginUser(String loginUsername, String loginPassword) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private String returnLoginStatus(boolean loggedln) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
