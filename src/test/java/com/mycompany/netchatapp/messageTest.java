@@ -3,23 +3,24 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
  */
 
+package com.mycompany.netchatapp;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach; // FIX 1: was @Before (JUnit 4) → @BeforeEach (JUnit 5)
 
-/**
- *
- * @author MANXIWA MSIMELELO
- */
-public class mesageTest {
-    private Message message1;
-    private Message message2;
 
-    @Before
+public class messageTest {
+    private message message1;
+    private message message2;
+
+    
+@BeforeEach // FIX 1
+
     public void setUp() {
-        // Test data from POE guide
-        message1 = new Message("0012345678", 1, "+27718693002",
+        message1 = new message("0012345678", 1, "+27718693002",
                 "Hi Mike, can you join us for dinner tonight?");
-        message2 = new Message("0098765432", 2, "08575975889",
+        message2 = new message("0098765432", 2, "08575975889",
                 "Hi Keegan, did you receive the payment?");
     }
 
@@ -32,7 +33,7 @@ public class mesageTest {
     @Test
     public void testCheckMessageLength_over250chars_returnsFailureWithCount() {
         String longText = "a".repeat(251);
-        Message msg = new Message("1234567890", 3, "+2712345678", longText);
+        message msg = new message("1234567890", 3, "+2712345678", longText);
         assertEquals("Message exceeds 250 characters by 1; please reduce the size.",
                      msg.checkMessageLength());
     }
@@ -40,14 +41,14 @@ public class mesageTest {
     @Test
     public void testCheckMessageLength_exactlyAtLimit_returnsSuccess() {
         String exactText = "a".repeat(250);
-        Message msg = new Message("1234567890", 4, "+2712345678", exactText);
+        message msg = new message("1234567890", 4, "+2712345678", exactText);
         assertEquals("Message successfully captured", msg.checkMessageLength());
     }
 
     @Test
     public void testCheckMessageLength_oneOver_returnsFailureWithCountOf1() {
         String overText = "a".repeat(251);
-        Message msg = new Message("1234567890", 5, "+2712345678", overText);
+        message msg = new message("1234567890", 5, "+2712345678", overText);
         assertEquals("Message exceeds 250 characters by 1; please reduce the size.",
                      msg.checkMessageLength());
     }
@@ -55,12 +56,16 @@ public class mesageTest {
     // --- Recipient Cell Tests ---
     @Test
     public void testCheckRecipientCell_validNumber_returnsSuccess() {
-        assertEquals("Cell phone number successfully captured.", message1.checkRecipientCell());
+        
+assertEquals("Cell phone number successfully captured.", message1.checkRecipient()); // FIX 2: method is checkRecipient()
+
     }
 
     @Test
     public void testCheckRecipientCell_invalidNumber_returnsFailure() {
-        assertEquals("Invalid recipient cell number.", message2.checkRecipientCell());
+        
+assertEquals("Invalid recipient cell number.", message2.checkRecipient()); // FIX 2
+
     }
 
     // --- Message Hash Tests ---

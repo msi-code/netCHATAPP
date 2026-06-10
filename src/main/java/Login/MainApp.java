@@ -4,6 +4,7 @@
  */
 package Login;
 
+import com.mycompany.netchatapp.Login;
 import java.util.Scanner;
 
 /**
@@ -17,7 +18,7 @@ public class MainApp {
         Scanner input = new Scanner(System.in);
         
         //Create an object of the login class so we can call its methods
-            Login login = new Login();
+            Login Login = new Login();
         
         //---REGISTRATION SECTION---
         System.out.println("===USER REGISRATION===");
@@ -32,7 +33,7 @@ public class MainApp {
         String phone =input.nextLine();
         
         //Call the registerUser method and store the message it returns
-        String response = login.registerUser(username, password, phone);
+        String response = Login.registerUser(username, password, phone);
         
         // Show the registerUser method and store the message it returns
         System.out.println(response);
@@ -47,10 +48,10 @@ public class MainApp {
          String loginPassword = input.nextLine();
          
          //Call loginUser to check if details
-          boolean loggedln = login.loginUser(loginUsername, loginPassword);
+          boolean loggedln = Login.loginUser(loginUsername, loginPassword);
           
           //Print out the correct login message
-          String loginMessage = login.returnLoginStatus(loggedln);
+          String loginMessage = Login.returnLoginStatus(loggedln);
           System.out.println(loginMessage);
     }
 }

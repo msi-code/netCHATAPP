@@ -8,7 +8,7 @@ package com.mycompany.netchatapp;
  *
  * @author MANXIWA MSIMELELO
  */
-public class Longin {
+public class Login {
     //user's information will be stored inside the variables
     String username;
     String password;

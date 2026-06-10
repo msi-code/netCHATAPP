@@ -2,7 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Message;
+package com.mycompany.netchatapp;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONObject;
 
 /**
  *
@@ -19,7 +23,7 @@ public class message {
     private String sendStatus;    // sent, Stored, Disregarded
     private static int totalMessages = 0;
     // Constuctor
-    public Message(String messageID, int messageNumber, String recipientCell, String messageText){
+    public message(String messageID, int messageNumber, String recipientCell, String messageText){
         this.messageID = messageID;
         this.messageNumber = messageNumber;
         this.recipient = recipient;
@@ -87,8 +91,8 @@ public class message {
         return totalMessages;
     
     }
-    public JSONObject storeMessage(){
-        JOSNObject json = new JSONObjectID();
+    public JSONObject storeMessage() throws JSONException{
+        JSONObject json = new JSONObject();
         json.put("MessageID", messageID);
         json.put("MessagesNumber", messageNumber);
         json.put("Message", recipient);
