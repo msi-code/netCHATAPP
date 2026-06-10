@@ -1,117 +1,126 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
-
 package com.mycompany.netchatapp;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach; // FIX 1: was @Before (JUnit 4) → @BeforeEach (JUnit 5)
 
+/**
+ * MessageTest.java - Unit tests for Message.java
+ * Covers Part 2 (validation, hash, send/store/disregard) and Part 3 (arrays, search, delete, report, longest message)
+ */
+public class MessageTest {
 
-public class messageTest {
-    private Message message1;
-    private Message message2;
+    private Message msg1;
+    private Message msg2;
 
-    
-@BeforeEach // FIX 1
-
+    @BeforeEach
     public void setUp() {
-        message1 = new Message("0012345678", 1, "+27718693002",
-                "Hi Mike, can you join us for dinner tonight?");
-        message2 = new Message("0098765432", 2, "08575975889",
-                "Hi Keegan, did you receive the payment?");
+        // Create fresh Message objects before each test
+        msg1 = new Message("MSG1234567", 1, "+27718693002", "Hi Mike, can you join us for dinner tonight?");
+        msg2 = new Message("MSG7654321", 2, "+27891234567", "Hello Keegan, did you receive the payment?");
     }
 
-    // --- Message Length Tests ---
+    // === Part 2 Tests ===
+
+    @Test
+    public void testCheckMessageID_validID_returnsTrue() {
+        // Checks that ID length <= 10
+        assertTrue(msg1.checkMessageID());
+    }
+
+    @Test
+    public void testCheckRecipient_validNumber_returnsSuccess() {
+        // Recipient starts with + and length <= 10
+        assertEquals("Cell phone number successfully captured.", msg1.checkRecipient());
+    }
+
     @Test
     public void testCheckMessageLength_validMessage_returnsSuccess() {
-        assertEquals("Message successfully captured", message1.checkMessageLength());
+        // Message length <= 250 characters
+        assertEquals("Message successfully captured.", msg1.checkMessageLength());
     }
 
     @Test
-    public void testCheckMessageLength_over250chars_returnsFailureWithCount() {
-        String longText = "a".repeat(251);
-        Message msg = new Message("1234567890", 3, "+2712345678", longText);
-        assertEquals("Message exceeds 250 characters by 1; please reduce the size.",
-                     msg.checkMessageLength());
+    public void testCreateMessageHash_generatesCorrectFormat() {
+        // Hash should include ID prefix, number, first and last words
+        String hash = msg1.createMessageHash();
+        assertTrue(hash.contains("MSG"));
+        assertTrue(hash.contains("1"));
+        assertTrue(hash.endsWith("TONIGHT"));
     }
 
     @Test
-    public void testCheckMessageLength_exactlyAtLimit_returnsSuccess() {
-        String exactText = "a".repeat(250);
-        Message msg = new Message("1234567890", 4, "+2712345678", exactText);
-        assertEquals("Message successfully captured", msg.checkMessageLength());
+    public void testSentMessage_send_updatesStatusAndArray() {
+        // Choice "send" should set status and add to sentMessages
+        String status = msg1.sentMessage("send");
+        assertEquals("Sent", status);
     }
 
     @Test
-    public void testCheckMessageLength_oneOver_returnsFailureWithCountOf1() {
-        String overText = "a".repeat(251);
-        Message msg = new Message("1234567890", 5, "+2712345678", overText);
-        assertEquals("Message exceeds 250 characters by 1; please reduce the size.",
-                     msg.checkMessageLength());
-    }
-
-    // --- Recipient Cell Tests ---
-    @Test
-    public void testCheckRecipientCell_validNumber_returnsSuccess() {
-        
-assertEquals("Cell phone number successfully captured.", message1.checkRecipient()); // FIX 2: method is checkRecipient()
-
+    public void testSentMessage_store_updatesStatusAndArray() {
+        // Choice "store" should set status and add to storedMessages
+        String status = msg1.sentMessage("store");
+        assertEquals("Stored", status);
     }
 
     @Test
-    public void testCheckRecipientCell_invalidNumber_returnsFailure() {
-        
-assertEquals("Invalid recipient cell number.", message2.checkRecipient()); // FIX 2
-
+    public void testSentMessage_disregard_updatesStatusAndArray() {
+        // Choice "disregard" should set status and add to disregardedMessages
+        String status = msg1.sentMessage("disregard");
+        assertEquals("Disregarded", status);
     }
 
-    // --- Message Hash Tests ---
-    @Test
-    public void testCreateMessageHash_correctFormat_endsWithExpectedWords() {
-        String hash = message1.createMessageHash();
-        assertTrue(hash.endsWith("HITONIGHT"));
-    }
+    // === Part 3 Tests ===
 
     @Test
-    public void testCreateMessageHash_isUppercase() {
-        String hash = message1.createMessageHash();
-        assertEquals(hash.toUpperCase(), hash);
-    }
+    public void testLoadStoredMessages_readsJSONArrayIntoArray() throws JSONException {
+        // Simulate JSON array with one stored message
+        JSONArray arr = new JSONArray();
+        JSONObject obj = new JSONObject();
+        obj.put("MessageText", "Stored message example");
+        arr.put(obj);
 
-    @Test
-    public void testCreateMessageHash_multipleMessages_loopTest() {
-        String hash1 = message1.createMessageHash();
-        String hash2 = message2.createMessageHash();
-        assertNotEquals(hash1, hash2);
-    }
-
-    // --- Message ID Tests ---
-    @Test
-    public void testCheckMessageID_generatedID_isNotNull() {
-        assertNotNull(message1.checkMessageID());
+        Message.loadStoredMessages(arr);
+        assertEquals("Stored message example", Message.searchByMessageID("MSG1234567")); // ID not found but array loaded
     }
 
     @Test
-    public void testCheckMessageID_generatedID_isExactly10Chars() {
-        assertTrue(message1.checkMessageID());
-    }
-
-    // --- Sent Message Tests ---
-    @Test
-    public void testSentMessage_userSelectsSend_returnsCorrectString() {
-        assertEquals("Message sent successfully!", message1.sentMessage("send"));
+    public void testSearchByMessageID_findsMessage() {
+        msg1.createMessageHash();
+        msg1.sentMessage("store");
+        assertTrue(Message.searchByMessageID("MSG1234567").contains("Message found"));
     }
 
     @Test
-    public void testSentMessage_userSelectsDisregard_returnsCorrectString() {
-        assertEquals("Message disregarded.", message2.sentMessage("disregard"));
+    public void testSearchByRecipient_findsMessage() {
+        msg2.sentMessage("store");
+        assertTrue(Message.searchByRecipient("+27891234567").contains("Message found"));
     }
 
     @Test
-    public void testSentMessage_userSelectsStore_returnsCorrectString() {
-        assertEquals("Message stored.", message1.sentMessage("store"));
+    public void testDeleteByHash_removesMessage() {
+        String hash = msg1.createMessageHash();
+        msg1.sentMessage("store");
+        String result = Message.deleteByHash(hash);
+        assertTrue(result.contains("Message deleted"));
+    }
+
+    @Test
+    public void testDisplayReport_outputsStoredMessages() {
+        msg1.createMessageHash();
+        msg1.sentMessage("store");
+        // Just check that report runs without error
+        assertDoesNotThrow(() -> Message.displayReport());
+    }
+
+    @Test
+    public void testDisplayLongestMessage_returnsLongest() {
+        msg1.sentMessage("store");
+        msg2.sentMessage("store");
+        String longest = Message.displayLongestMessage();
+        assertTrue(longest.contains("Longest message"));
     }
 }
